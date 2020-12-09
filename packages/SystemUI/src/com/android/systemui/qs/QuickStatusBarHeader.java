@@ -22,6 +22,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.DisplayCutout;
@@ -35,6 +36,7 @@ import android.widget.Space;
 import androidx.annotation.NonNull;
 
 import com.android.internal.policy.SystemBarUtils;
+import com.android.systemui.plugins.ActivityStarter;
 import com.android.settingslib.Utils;
 import com.android.systemui.Dependency;
 import com.android.systemui.R;
@@ -142,6 +144,7 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
 
         mClockContainer = findViewById(R.id.clock_container);
         mClockView = findViewById(R.id.clock);
+
         mDatePrivacySeparator = findViewById(R.id.space);
         // Tint for the battery icons are handled in setupHost()
         mBatteryRemainingIcon = findViewById(R.id.batteryRemainingIcon);
@@ -265,9 +268,9 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
                 Math.max(qsOffsetHeight, mDatePrivacyView.getMinimumHeight());
         mDatePrivacyView.setLayoutParams(mDatePrivacyView.getLayoutParams());
 
-        mStatusIconsView.getLayoutParams().height =
+        /*mStatusIconsView.getLayoutParams().height =
                 Math.max(qsOffsetHeight, mStatusIconsView.getMinimumHeight());
-        mStatusIconsView.setLayoutParams(mStatusIconsView.getLayoutParams());
+        mStatusIconsView.setLayoutParams(mStatusIconsView.getLayoutParams());*/
 
         ViewGroup.LayoutParams lp = getLayoutParams();
         if (mQsDisabled) {
@@ -349,17 +352,16 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
                     @Override
                     public void onAnimationAtEnd() {
                         super.onAnimationAtEnd();
-                        mClockDateView.setVisibility(View.VISIBLE);
+                       // mClockDateView.setVisibility(View.VISIBLE);
 			mIconContainer.setVisibility(View.VISIBLE);
 			mBatteryRemainingIcon.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void onAnimationStarted() {
-                        mClockDateView.setVisibility(View.GONE);
+                        //mClockDateView.setFreezeSwitching(true);
 			mIconContainer.setVisibility(View.GONE);
 			mBatteryRemainingIcon.setVisibility(View.GONE);
-                        mClockDateView.setFreezeSwitching(true);
                         setSeparatorVisibility(false);
                         if (!mIsSingleCarrier) {
                             mIconContainer.addIgnoredSlots(mRssiIgnoredSlots);
@@ -369,8 +371,7 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
                     @Override
                     public void onAnimationAtStart() {
                         super.onAnimationAtStart();
-                        mClockDateView.setFreezeSwitching(false);
-                        mClockDateView.setVisibility(View.GONE);
+                        //mClockDateView.setFreezeSwitching(false);
 			mBatteryRemainingIcon.setVisibility(View.GONE);
 			mIconContainer.setVisibility(View.GONE);
                         setSeparatorVisibility(mShowClockIconsSeparator);
@@ -399,6 +400,17 @@ public class QuickStatusBarHeader extends FrameLayout implements TunerService.Tu
         if (mExpanded == expanded) return;
         mExpanded = expanded;
         quickQSPanelController.setExpanded(expanded);
+
+	/**if (mExpanded){
+	        mStatusIconsView.getLayoutParams().height = mContext.getResources()
+                .getDimensionPixelSize(R.dimen.expanded_qs_header_height);
+	        mStatusIconsView.setLayoutParams(mStatusIconsView.getLayoutParams());
+		mClockView.setTextSize(46);
+	} else {
+	        mStatusIconsView.getLayoutParams().height = WRAP_CONTENT;
+                mStatusIconsView.setLayoutParams(mStatusIconsView.getLayoutParams());
+                mClockView.setTextSize(22);
+	}**/
         updateEverything();
     }
 
